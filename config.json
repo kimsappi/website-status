@@ -1,0 +1,17 @@
+{
+  "interval": "1 minute",
+  "urls": [
+    {
+      "url": "https://google.com",
+      "status": 200
+    },
+    {
+      "url": "https://github.com",
+      "content": "Customize your process with GitHub apps"
+    },
+    {
+      "url": "http://example.com/thispageprobablydoesnotexist",
+      "status": 200
+    }
+  ]
+}
