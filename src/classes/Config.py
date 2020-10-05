@@ -1,4 +1,5 @@
 import json
+import errno
 import urllib.request
 
 class Config:
@@ -17,12 +18,14 @@ class Config:
       with open(self.__path) as f:
         return f.read()
     except IOError as err:
-      if x.errno == errno.ENOENT:
+      if err.errno == errno.ENOENT:
         raise Exception(f'Could not find configuration file \'{self.__path}\'')
-      if x.errno == errno.EACCES:
+      elif err.errno == errno.EACCES:
         raise Exception('Configuration file found but unreadable')
+      else:
+        raise Exception('Something went wrong when reading the file')
     except:
-      raise Exception('Something went wrong when reading the file')
+      raise Exception('Something went wrong when reading the file (!IOError)')
 
   def readFromWeb(self):
     """
