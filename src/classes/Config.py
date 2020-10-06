@@ -22,9 +22,9 @@ class Config:
         return f.read()
     except IOError as err:
       if err.errno == errno.ENOENT:
-        raise Exception(f'Could not find configuration file \'{self.__path}\'')
+        raise IOError(f'Could not find configuration file \'{self.__path}\'')
       elif err.errno == errno.EACCES:
-        raise Exception('Configuration file found but unreadable')
+        raise IOError('Configuration file found but unreadable')
       else:
         raise Exception('Something went wrong when reading the file')
     except:
