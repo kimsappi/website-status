@@ -21,6 +21,7 @@ def filterRequestReturnValue(requestResult: int, *args: int) -> bool:
 
 class RequestMaker:
   DEFAULT_INTERVAL = 60
+  DEFAULT_TIMEOUT = 10
 
   def __init__(self, config: Config):
     try:
@@ -38,7 +39,8 @@ class RequestMaker:
       logger.error(f'Falling back to default interval {self.DEFAULT_INTERVAL} '
       f'seconds: {e}')
     self.__timeout = (
-      self.__config['timeout'] if 'timeout' in self.__config else 10
+      self.__config['timeout'] if 'timeout' in self.__config
+        else self.DEFAULT_TIMEOUT
     )
 
   def __calculateClassTotals(self, results: List[int]):
