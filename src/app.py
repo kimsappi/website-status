@@ -1,23 +1,30 @@
 import sys
-import urllib.request
 import logging
 import asyncio
+import time
+from pathlib import Path
 
 from classes.Config import Config
 from classes.RequestMaker import RequestMaker
 
-logging.basicConfig(
-  level=logging.NOTSET,
-  filename='log',
-  filemode='a'
-)
+logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger()
 logging.getLogger('asyncio').disabled = True
 
 async def websiteStatus(configPath: str):
-  configObj = Config(configPath)
-  requestMaker = RequestMaker(configObj)
-  await requestMaker.run()
+  while True:
+    try:
+      configObj = Config(configPath)
+      requestMaker = RequestMaker(configObj)
+      timeToSleep = await requestMaker.run()
+    except Exception as e:
+      timeToSleep = 60
+      try:
+        logger.critical(e)
+      except:
+        print('Critical error: cannot write to log file')
+    finally:
+      time.sleep(timeToSleep)
 
 if __name__ == '__main__':
   """

@@ -46,7 +46,7 @@ class Request:
     # Check that response content contains specified content
     if self.__content:
       responseContent = await response.read()
-      if self.__content.encode() not in responseContent:
+      if self.__content.encode(encoding='UTF-8') not in responseContent:
         self.__result = self.__result * self.requestResult['content']
 
     if self.__result == self.requestResult['none']:

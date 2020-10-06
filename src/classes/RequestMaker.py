@@ -6,6 +6,7 @@ from aiohttp import ClientSession
 
 from .Config import Config
 from .Request import Request
+from .IntervalParser import IntervalParser
 
 logger = logging.getLogger()
 
@@ -20,11 +21,11 @@ def filterRequestReturnValue(requestResult: int, *args: int) -> bool:
 
 class RequestMaker:
   def __init__(self, config: Config):
-    self.__startTime = time.monotonic()
     try:
       self.__config = config.parseConfig()
-    except:
-      raise Exception('Couldn\'t read config')
+      self.__config['interval'] = IntervalParser(self.__config['interval'])
+    except Exception as e:
+      raise Exception(f'Couldn\'t read config: {e}')
 
   def __calculateClassTotals(self, results: List[int]):
     """
@@ -53,9 +54,13 @@ class RequestMaker:
       'error': errorTotal
     }
 
-  async def run(self):
-    logger.info(f'\nStarting {len(self.__config["urls"])} requests')
+  async def run(self) -> int:
+    """
+    Handles making requests asynchronously. Returns time to sleep
+    """
+    logger.info(f'STARTING {len(self.__config["urls"])} requests')
     tasks = []
+    startTime = time.monotonic()
     async with ClientSession() as session:
       for target in self.__config['urls']:
         request = Request(target)
@@ -66,10 +71,16 @@ class RequestMaker:
       self.__calculateClassTotals(results)
 
       logger.info('\t'.join([
-        f'Completed {len(results)} requests.',
+        f'COMPLETED {len(results)} requests.',
         f'ERROR={self.__totals["error"]}',
         f'WARNING={self.__totals["warning"]}',
         f'SUCCESS={self.__totals["success"]}'
       ]))
 
       endTime = time.monotonic()
+
+      # Enforce a minimum interval of 1 second after completion of this round
+      return max(
+        self.__config['interval'] - (endTime - startTime),
+        1
+      )

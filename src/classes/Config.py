@@ -1,6 +1,7 @@
 import json
 import errno
 import urllib.request
+import logging
 
 class Config:
   """
@@ -43,7 +44,22 @@ class Config:
       config = self.readFromWeb()
     
     try:
-      return json.loads(config)
+      config = json.loads(config)
     except:
-      raise Exception('Configuration file could not be read as JSON. '
+      raise Exception('Configuration file could not be read as JSON. '\
       'Please check the formatting.')
+
+    # Setting log location to path specified in config
+    try:
+      newLogFileHandler = logging.FileHandler(config['logPath'], 'a')
+    except Exception as e:
+      try:
+        raise Exception(f'Cannot write to new log path: {config["logPath"]}')
+      except:
+        raise Exception('No "logPath" in configuration file')
+    logger = logging.getLogger()
+    for handler in logger.handlers[:]:
+      logger.removeHandler(handler)
+    logger.addHandler(newLogFileHandler)
+    return config
+    
