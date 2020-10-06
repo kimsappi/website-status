@@ -7,9 +7,11 @@ There is also an extremely basic web interface available in the (https://github.
 * Python 3 (>=3.6 I believe, for f-string support) & pip
   * Python 3.8 is required for `tests/testRequest` (`unittest.IsolatedAsyncioTestCase`)
 * Python `venv` or similar recommended
-* Python module 
+* Python module `aiohttp` (+its dependencies) for asynchronous requests
+* Python module `flask` (+its dependencies) for the optional web interface
 
 # Instructions
+## CLI interface
 ```shell
 git clone http://github.com/kimsappi/website-status.git
 cd website-status
@@ -24,6 +26,20 @@ python3 app.py /path/to/config # path can also be a URL to a JSON file
 # Finally, you can run the tests if you want
 ./test.sh
 ```
+
+## Web interface
+```shell
+git clone http://github.com/kimsappi/website-status.git
+cd website-status
+
+# The following block is optional: virtual environment setup
+python3 -m venv env
+source env/bin/activate
+
+pip3 install -r requirements.txt
+python3 web.py /path/to/config # path can also be a URL to a JSON file
+```
+This will start a web server at `http://localhost:3000`.
 
 # Configuration
 The configuration file **must not** be named `http*` if called with just the filename. If called with a path, file names can be acceptable. This is because a path starting with `http` is considered a URL.
