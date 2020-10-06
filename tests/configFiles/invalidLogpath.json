@@ -1,0 +1,11 @@
+{
+  "interval": "1 minute",
+  "logPath": "/sys/test/a",
+  "timeout": 10,
+  "urls": [
+    {
+      "url": "https://google.com",
+      "status": 200
+    }
+  ]
+}

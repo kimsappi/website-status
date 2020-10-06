@@ -1,0 +1,11 @@
+{
+  "interval": "1 minute",
+  "logPath": "log",
+  "timeout": 10,
+  "urls": [
+    {
+      "url": "https://google.com",
+      "status": 200
+    }
+  ]
+}
