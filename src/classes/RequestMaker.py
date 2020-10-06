@@ -7,7 +7,7 @@ from .Request import Request
 
 class RequestMaker:
   def __init__(self, config: Config):
-    self.__startTime = time.time()
+    self.__startTime = time.monotonic()
     try:
       self.__config = config.parseConfig()
     except:
@@ -22,3 +22,4 @@ class RequestMaker:
         tasks.append(task)
 
       results = await asyncio.gather(*tasks)
+      endTime = time.monotonic()

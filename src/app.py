@@ -10,6 +10,7 @@ logging.basicConfig(
   level=logging.NOTSET
 )
 logger = logging.getLogger()
+logging.getLogger('asyncio').disabled = True
 
 async def websiteStatus(configPath: str):
   configObj = Config(configPath)

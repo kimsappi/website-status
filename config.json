@@ -12,6 +12,14 @@
     {
       "url": "http://example.com/thispageprobablydoesnotexist",
       "status": 200
+    },
+    {
+      "url": "http://localhost:60000",
+      "status": 200
+    },
+    {
+      "url": "http://google.com:81",
+      "status": 200
     }
   ]
 }
