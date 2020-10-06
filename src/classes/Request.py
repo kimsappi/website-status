@@ -3,7 +3,10 @@ from __future__ import annotations
 from typing import Dict
 import aiohttp
 import asyncio
+import logging
 import time
+
+logger = logging.getLogger()
 
 class Request:
 
@@ -22,6 +25,7 @@ class Request:
     self.__status = url['status'] if 'status' in url else None
     self.__content = url['content'] if 'content' in url else None
     self.__result = self.requestResult['none']
+    self.__responseStatus = 'error'
 
   def __setRequestTime(self):
     """
@@ -33,6 +37,8 @@ class Request:
       self.__time = endTime - self.__startTime
 
   async def __checkSuccess(self, response: aiohttp.client_reqrep.ClientResponse):
+    self.__responseStatus = response.status
+    
     # Check that response status matches specified status
     if self.__status and self.__status != response.status:
       self.__result = self.__result * self.requestResult['status']
@@ -40,14 +46,17 @@ class Request:
     # Check that response content contains specified content
     if self.__content:
       responseContent = await response.read()
-      if self.__content not in responseContent:
+      if self.__content.encode() not in responseContent:
         self.__result = self.__result * self.requestResult['content']
 
+    if self.__result == self.requestResult['none']:
+      self.__result = self.requestResult['success']
+
   def __responseError(self, reason: str):
-    self.__error(reason)
+    self.__error = reason
     self.__result = self.requestResult['error']
 
-  async def fetch(self, session: aiohttp.ClientSession) -> Request:
+  async def fetch(self, session: aiohttp.ClientSession) -> int:
     try:
       self.__startTime = time.monotonic()
       async with session.get(self.__url, timeout=10) as response:
@@ -62,7 +71,51 @@ class Request:
       self.__responseError('Connection error (not timeout or refusal)')
     finally:
       self.__setRequestTime()
-      return self
+      self.__log()
+      return self.__result
+
+  def __log(self):
+    """
+    Commit this request to the log
+    """
+    if self.__result == self.requestResult['error']:
+      logger.error(str(self))
+    elif not self.__result % self.requestResult['status'] or\
+    not self.__result % self.requestResult['content']:
+      logger.warning(str(self))
+    elif self.__result == self.requestResult['success']:
+      logger.info(str(self))
+    else:
+      # This should only trigger if someone modifies this file improperly
+      logger.critical(str(self))
 
   def __str__(self) -> str:
-    return 'data about request'
+    if self.__result == self.requestResult['error']:
+      reason = self.__error
+
+    elif not self.__result % self.requestResult['status'] and\
+    not self.__result % self.requestResult['content']:
+      reason = 'Both status and content checks failed. '\
+      f'Expected {self.__status}, \'{self.__content}\''
+
+    elif not self.__result % self.requestResult['status']:
+      reason = 'Server responded with wrong status. '\
+      f'Expected {self.__status}'
+
+    elif not self.__result % self.requestResult['content']:
+      reason = 'Expected content not found in response. '\
+      f'Expected \'{self.__content}\''
+    
+    elif self.__result == self.requestResult['success']:
+      reason = 'Success'
+
+    else:
+      reason = 'Request.__result is set incorrectly, status undefined.'\
+      'Fix src/classes/Request.py'
+
+    return '\t'.join([
+      f'URL={self.__url}',
+      f'STATUS={self.__responseStatus}',
+      f'TIME={self.__time:.3f}',
+      f'MSG={reason}'
+    ])

@@ -1,9 +1,22 @@
+from typing import List
 import time
 import asyncio
+import logging
 from aiohttp import ClientSession
 
 from .Config import Config
 from .Request import Request
+
+logger = logging.getLogger()
+
+def filterRequestReturnValue(requestResult: int, *args: int) -> bool:
+  """
+  Filter function for filtering the results array to successes, warnings, errors
+  """
+  for mod in args:
+    if not requestResult % mod:
+      return True
+  return False
 
 class RequestMaker:
   def __init__(self, config: Config):
@@ -13,7 +26,35 @@ class RequestMaker:
     except:
       raise Exception('Couldn\'t read config')
 
+  def __calculateClassTotals(self, results: List[int]):
+    """
+    Calculating total amount of results in each class
+    """
+    successTotal = len(list(filter(
+      lambda arr: filterRequestReturnValue(arr, Request.requestResult['success']),
+      results
+    )))
+
+    errorTotal = len(list(filter(
+      lambda arr: filterRequestReturnValue(arr, Request.requestResult['error']),
+      results
+    )))
+
+    warningTotal = len(list(filter(
+      lambda arr: filterRequestReturnValue(
+        arr, Request.requestResult['status'], Request.requestResult['content']
+      ),
+      results
+    )))
+
+    self.__totals = {
+      'success': successTotal,
+      'warning': warningTotal,
+      'error': errorTotal
+    }
+
   async def run(self):
+    logger.info(f'\nStarting {len(self.__config["urls"])} requests')
     tasks = []
     async with ClientSession() as session:
       for target in self.__config['urls']:
@@ -22,4 +63,13 @@ class RequestMaker:
         tasks.append(task)
 
       results = await asyncio.gather(*tasks)
+      self.__calculateClassTotals(results)
+
+      logger.info('\t'.join([
+        f'Completed {len(results)} requests.',
+        f'ERROR={self.__totals["error"]}',
+        f'WARNING={self.__totals["warning"]}',
+        f'SUCCESS={self.__totals["success"]}'
+      ]))
+
       endTime = time.monotonic()

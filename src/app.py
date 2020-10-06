@@ -7,7 +7,9 @@ from classes.Config import Config
 from classes.RequestMaker import RequestMaker
 
 logging.basicConfig(
-  level=logging.NOTSET
+  level=logging.NOTSET,
+  filename='log',
+  filemode='a'
 )
 logger = logging.getLogger()
 logging.getLogger('asyncio').disabled = True
