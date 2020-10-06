@@ -56,10 +56,10 @@ class Request:
     self.__error = reason
     self.__result = self.requestResult['error']
 
-  async def fetch(self, session: aiohttp.ClientSession) -> int:
+  async def fetch(self, session: aiohttp.ClientSession, timeout: int) -> int:
     try:
       self.__startTime = time.monotonic()
-      async with session.get(self.__url, timeout=10) as response:
+      async with session.get(self.__url, timeout=timeout) as response:
         # Setting the request time here in case reading the response is slow
         self.__setRequestTime()
         await self.__checkSuccess(response)

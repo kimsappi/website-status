@@ -20,12 +20,26 @@ def filterRequestReturnValue(requestResult: int, *args: int) -> bool:
   return False
 
 class RequestMaker:
+  DEFAULT_INTERVAL = 60
+
   def __init__(self, config: Config):
     try:
       self.__config = config.parseConfig()
-      self.__config['interval'] = IntervalParser(self.__config['interval'])
     except Exception as e:
       raise Exception(f'Couldn\'t read config: {e}')
+
+    try:
+      if hasattr(self.__config, 'interval'):
+        self.__config['interval'] = IntervalParser(self.__config['interval'])
+      else:
+        raise Exception('Interval not found in configuration file')
+    except Exception as e:
+      self.__config['interval'] = self.DEFAULT_INTERVAL
+      logger.error(f'Falling back to default interval {self.DEFAULT_INTERVAL} '
+      f'seconds: {e}')
+    self.__timeout = (
+      self.__config['timeout'] if 'timeout' in self.__config else 10
+    )
 
   def __calculateClassTotals(self, results: List[int]):
     """
@@ -64,7 +78,7 @@ class RequestMaker:
     async with ClientSession() as session:
       for target in self.__config['urls']:
         request = Request(target)
-        task = asyncio.ensure_future(request.fetch(session))
+        task = asyncio.ensure_future(request.fetch(session, self.__timeout))
         tasks.append(task)
 
       results = await asyncio.gather(*tasks)
