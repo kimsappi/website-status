@@ -9,6 +9,7 @@ import time
 logger = logging.getLogger()
 
 class Request:
+  # PUBLIC VARIABLES AND METHODS
 
   # Dict of prime numbers (!1) to designate whether the response was as desired
   # A status of 15 means that both response status and content failed checks
@@ -26,6 +27,26 @@ class Request:
     self.__content = url['content'] if 'content' in url else None
     self.__result = self.requestResult['none']
     self.__responseStatus = 'error'
+
+  async def fetch(self, session: aiohttp.ClientSession, timeout: int) -> int:
+    try:
+      self.__startTime = time.monotonic()
+      async with session.get(self.__url, timeout=timeout) as response:
+        # Setting the request time here in case reading the response is slow
+        self.__setRequestTime()
+        await self.__checkSuccess(response)
+    except aiohttp.client_exceptions.ClientConnectorError:
+      self.__responseError('Connection refused')
+    except asyncio.exceptions.TimeoutError:
+      self.__responseError('Request timed out')
+    except:
+      self.__responseError('Connection error (not timeout or refusal)')
+    finally:
+      self.__setRequestTime()
+      self.__log()
+      return self.__result
+
+  # PRIVATE METHODS
 
   def __setRequestTime(self):
     """
@@ -56,24 +77,6 @@ class Request:
     self.__error = reason
     self.__result = self.requestResult['error']
 
-  async def fetch(self, session: aiohttp.ClientSession, timeout: int) -> int:
-    try:
-      self.__startTime = time.monotonic()
-      async with session.get(self.__url, timeout=timeout) as response:
-        # Setting the request time here in case reading the response is slow
-        self.__setRequestTime()
-        await self.__checkSuccess(response)
-    except aiohttp.client_exceptions.ClientConnectorError:
-      self.__responseError('Connection refused')
-    except asyncio.exceptions.TimeoutError:
-      self.__responseError('Request timed out')
-    except:
-      self.__responseError('Connection error (not timeout or refusal)')
-    finally:
-      self.__setRequestTime()
-      self.__log()
-      return self.__result
-
   def __log(self):
     """
     Commit this request to the log
@@ -89,6 +92,8 @@ class Request:
       # This should only trigger if someone modifies this file improperly
       logger.critical(str(self))
 
+  # I suppose this is technically public but it shouldn't be used outside
+  # because it depends on values that are may not be finalised yet
   def __str__(self) -> str:
     if self.__result == self.requestResult['error']:
       reason = self.__error

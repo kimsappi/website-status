@@ -20,6 +20,8 @@ def filterRequestReturnValue(requestResult: int, *args: int) -> bool:
   return False
 
 class RequestMaker:
+  # PUBLIC VARIABLES AND METHODS
+
   DEFAULT_INTERVAL = 60
   DEFAULT_TIMEOUT = 10
 
@@ -42,33 +44,6 @@ class RequestMaker:
       self.__config['timeout'] if 'timeout' in self.__config
         else self.DEFAULT_TIMEOUT
     )
-
-  def __calculateClassTotals(self, results: List[int]):
-    """
-    Calculating total amount of results in each class
-    """
-    successTotal = len(list(filter(
-      lambda arr: filterRequestReturnValue(arr, Request.requestResult['success']),
-      results
-    )))
-
-    errorTotal = len(list(filter(
-      lambda arr: filterRequestReturnValue(arr, Request.requestResult['error']),
-      results
-    )))
-
-    warningTotal = len(list(filter(
-      lambda arr: filterRequestReturnValue(
-        arr, Request.requestResult['status'], Request.requestResult['content']
-      ),
-      results
-    )))
-
-    self.__totals = {
-      'success': successTotal,
-      'warning': warningTotal,
-      'error': errorTotal
-    }
 
   async def run(self) -> int:
     """
@@ -100,3 +75,32 @@ class RequestMaker:
         self.__config['interval'] - (endTime - startTime),
         1
       )
+
+  # PRIVATE METHODS
+
+  def __calculateClassTotals(self, results: List[int]):
+    """
+    Calculating total amount of results in each class
+    """
+    successTotal = len(list(filter(
+      lambda arr: filterRequestReturnValue(arr, Request.requestResult['success']),
+      results
+    )))
+
+    errorTotal = len(list(filter(
+      lambda arr: filterRequestReturnValue(arr, Request.requestResult['error']),
+      results
+    )))
+
+    warningTotal = len(list(filter(
+      lambda arr: filterRequestReturnValue(
+        arr, Request.requestResult['status'], Request.requestResult['content']
+      ),
+      results
+    )))
+
+    self.__totals = {
+      'success': successTotal,
+      'warning': warningTotal,
+      'error': errorTotal
+    }
