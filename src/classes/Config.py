@@ -2,6 +2,7 @@ import json
 import errno
 import urllib.request
 import logging
+import time
 
 from .LogFormat import LogFormat
 
@@ -30,7 +31,9 @@ class Config:
     # Setting log location to path specified in config
     try:
       newLogFileHandler = logging.FileHandler(config['logPath'], 'a')
-      newLogFileHandler.setFormatter(logging.Formatter(LogFormat()))
+      formatter = logging.Formatter(LogFormat())
+      formatter.converter = time.gmtime
+      newLogFileHandler.setFormatter(formatter)
     except Exception as e:
       try:
         raise Exception(f'Cannot write to new log path: {config["logPath"]}')

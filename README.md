@@ -1,9 +1,13 @@
 # About
-Service that checks that websites/URLs listed in a specified configuration file respond correctly.
+Service that checks that websites/URLs listed in a specified configuration file respond correctly. *Asynchronous requesting* makes things go quicker especially if many servers are slow to respond, although it may cause problems with if servers consider your requests to be spam.
+
+There is also an extremely basic web interface available in the (https://github.com/kimsappi/website-status/tree/flask)[flask branch].
 
 # Requirements
 * Python 3 (>=3.6 I believe, for f-string support) & pip
+  * Python 3.8 is required for `tests/testRequest` (`unittest.IsolatedAsyncioTestCase`)
 * Python `venv` or similar recommended
+* Python module 
 
 # Instructions
 ```shell
@@ -16,6 +20,9 @@ source env/bin/activate
 
 pip3 install -r requirements.txt
 python3 app.py /path/to/config # path can also be a URL to a JSON file
+
+# Finally, you can run the tests if you want
+./test.sh
 ```
 
 # Configuration
@@ -32,5 +39,8 @@ Configuration needs to be in JSON format with the following values:
     * `content` (string): Response body contains this string.
 
 # Considerations
+* I chose to reread the configuration on every run, so the surveyed websites can be changed dynamically and 
+* `time.sleep()` probably isn't the ideal solution. A tool like `cron` or some external application controlling the requests would probably be a better solution.
 * Timing may break completely if more than 100 URLs (`aiohttp` default simultaneous connections) are added. Lower-level tinkering would be needed to figure out when requests are actually made.
 * I'm sure better separation of concerns is possible, e.g. logging for a specific request is made inside `Request.fetch()` itself. However, this was my first attempt as async Python so I wasn't entirely sure how that could be possible while keeping the logging real-time.
+* Asynchronous requests may not be the best idea if multiple requests are directed at the same server, since they may be considered spam.

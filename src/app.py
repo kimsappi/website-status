@@ -8,10 +8,7 @@ from classes.Config import Config
 from classes.RequestMaker import RequestMaker
 from classes.LogFormat import LogFormat
 
-logging.basicConfig(
-  level=logging.INFO,
-  format=LogFormat()
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 async def websiteStatus(configPath: str):

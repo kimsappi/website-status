@@ -32,7 +32,7 @@ class RequestMaker:
       raise Exception(f'Couldn\'t read config: {e}')
 
     try:
-      if hasattr(self.__config, 'interval'):
+      if 'interval' in self.__config:
         self.__config['interval'] = IntervalParser(self.__config['interval'])
       else:
         raise Exception('Interval not found in configuration file')
