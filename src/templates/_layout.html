@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Website Status</title>
+  </head>
+  <body onload="setTimeout(() => location.reload(), 60000)">
+    <header>
+      <a href='/raw'>Raw logfile</a>
+    </header>
+    <div>
+      {% block content %}{% endblock content %}
+    </div>
+  </body>
+</html>

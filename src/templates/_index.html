@@ -1,0 +1,23 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+  <h4>Latest requests initiated at {{ startTime }}</h4>
+  <table>
+    <tr>
+      <th>URL</th>
+      <th>Response status</th>
+      <th>Response time</th>
+      <th>Details</th>
+    </tr>
+  {% for site in sites %}
+    <tr>
+      <td>
+        <a href='{{ site.url }}'>{{ site.url }}</a>
+      </td>
+      <td>{{ site.status }}</td>
+      <td>{{ site.time }}</td>
+      <td>{{ site.msg }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endblock content %}
