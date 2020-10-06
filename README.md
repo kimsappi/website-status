@@ -7,7 +7,7 @@ There is also an extremely basic web interface available in the (https://github.
 * Python 3 (>=3.6 I believe, for f-string support) & pip
   * Python 3.8 is required for `tests/testRequest` (`unittest.IsolatedAsyncioTestCase`)
 * Python `venv` or similar recommended
-* Python module 
+* Python module `aiohttp` (+its dependencies) for asynchronous requests
 
 # Instructions
 ```shell
