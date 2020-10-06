@@ -6,10 +6,13 @@ from pathlib import Path
 
 from classes.Config import Config
 from classes.RequestMaker import RequestMaker
+from classes.LogFormat import LogFormat
 
-logging.basicConfig(level=logging.NOTSET)
+logging.basicConfig(
+  level=logging.INFO,
+  format=LogFormat()
+)
 logger = logging.getLogger()
-logging.getLogger('asyncio').disabled = True
 
 async def websiteStatus(configPath: str):
   while True:

@@ -3,6 +3,8 @@ import errno
 import urllib.request
 import logging
 
+from .LogFormat import LogFormat
+
 class Config:
   """
   Configuration file parser
@@ -52,6 +54,7 @@ class Config:
     # Setting log location to path specified in config
     try:
       newLogFileHandler = logging.FileHandler(config['logPath'], 'a')
+      newLogFileHandler.setFormatter(logging.Formatter(LogFormat()))
     except Exception as e:
       try:
         raise Exception(f'Cannot write to new log path: {config["logPath"]}')

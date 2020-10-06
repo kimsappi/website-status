@@ -1,4 +1,5 @@
 {
+  "interval": "1 minute",
   "logPath": "log",
   "timeout": 10,
   "urls": [
