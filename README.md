@@ -1,7 +1,7 @@
 # About
 Service that checks that websites/URLs listed in a specified configuration file respond correctly. *Asynchronous requesting* makes things go quicker especially if many servers are slow to respond, although it may cause problems with if servers consider your requests to be spam.
 
-There is also an extremely basic web interface available in the [https://github.com/kimsappi/website-status/tree/flask](flask branch). A version of the web interface is available [http://kimsappi-website-status.herokuapp.com/](here).
+There is also an extremely basic web interface available in the [flask branch](https://github.com/kimsappi/website-status/tree/flask). A version of the web interface is available [here](http://kimsappi-website-status.herokuapp.com/).
 
 # Requirements
 * Python 3.7 (for `asyncio.run`) & pip
@@ -56,7 +56,7 @@ Configuration needs to be in JSON format with the following values:
 
 # Log file format
 The format of a request line is (columns are tab-separated):
-`datetime level URL=<url> STATUS=<response status code || 'error'> TIME=<response time> MSG=<message about request success/failure>`
+`<datetime> <level> URL=<url> STATUS=<response status code || 'error'> TIME=<response time> MSG=<message about request success/failure>`
 
 Each block starts and ends with an `INFO` line containing data about the block.
 ```
