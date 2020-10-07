@@ -21,7 +21,7 @@ python3 -m venv env
 source env/bin/activate
 
 pip3 install -r requirements.txt
-python3 app.py /path/to/config # path can also be a URL to a JSON file
+python3 src/app.py /path/to/config # path can also be a URL to a JSON file
 
 # Finally, you can run the tests if you want
 ./test.sh
