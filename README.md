@@ -37,7 +37,7 @@ python3 -m venv env
 source env/bin/activate
 
 pip3 install -r requirements.txt
-python3 web.py /path/to/config # path can also be a URL to a JSON file
+python3 src/web.py
 ```
 This will start a web server at `http://localhost:3000`.
 

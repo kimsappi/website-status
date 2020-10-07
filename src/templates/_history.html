@@ -4,12 +4,13 @@
   <h4>Latest requests initiated at {{ startTime }}</h4>
   <table>
     <tr>
+      <th>Date</th>
       <th>URL</th>
       <th>Response status</th>
       <th>Response time</th>
       <th>Details</th>
     </tr>
-  {% for site in sites %}
+  {% for site in rows %}
     {% if site.responseType == 'INFO' %}
       {% set bg = 'aaffa8' %}
     {% elif site.responseType == 'WARNING' %}
@@ -18,15 +19,13 @@
       {% set bg = 'ffb94f' %}
     {% endif %}
     <tr style="background-color: #{{ bg }};">
+      <td>{{ site.date }}</td>
       <td>
         <a href='{{ site.url }}'>{{ site.url }}</a>
       </td>
       <td>{{ site.status }}</td>
       <td>{{ site.time }}</td>
       <td>{{ site.msg }}</td>
-      <td>
-        <a href='/history/{{ site.url|urlencode|replace("/", "@@SLASH@@") }}'>History</a>
-      </td>
     </tr>
   {% endfor %}
   </table>
